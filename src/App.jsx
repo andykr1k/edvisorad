@@ -1,11 +1,10 @@
 import { useState } from 'react'
 import logo from './assets/front.png'
 import bg from './assets/bg.png'
+import { db } from './config/Firebase'
+import { collection, addDoc } from "firebase/firestore"; 
+
 import {
-  Alert,
-  AlertIcon,
-  AlertTitle,
-  AlertDescription,
   Input,
   useToast,
   Button,
@@ -14,7 +13,21 @@ import {
 
 function App() {
   const toast = useToast()
+  var [Email, setEmail] = useState(false)
 
+  const writeContactData = async(e) => {
+    e.preventDefault();
+    try {
+      await addDoc(collection(db, "contactUs"), {
+        email: Email,
+      });
+      console.log("Document written with ID: " + Name );
+    } catch (e) {
+      console.error("Error adding document: " + Name, e);
+    }
+
+    Email = '';
+  }
   return (
     <div>
       <div className='fixed z-1 bg-transparent min-h-screen min-w-full'>
@@ -49,9 +62,12 @@ function App() {
             placeholder='Enter your Email for Updates!'
             size='md'
             color='white'
+            onChange={ (e) => setEmail(e.target.value) }
           />
         <div className='ml-5'>
+        <form onSubmit={writeContactData}>
           <Button
+              type="submit"
               variant='outline'
               colorScheme='whiteAlpha'
               onClick={() =>
@@ -67,6 +83,7 @@ function App() {
             >
               Submit
           </Button>
+          </form>
         </div>
       </div>
     </div>
